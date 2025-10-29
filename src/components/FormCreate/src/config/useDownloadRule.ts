@@ -73,7 +73,7 @@ export const useDownloadRule = () => {
           value: 'link',
           options: [
             { label: '直接下载', value: 'link' },
-            { label: '接口下载', value: 'fetch' }
+            // { label: '接口下载', value: 'fetch' }
           ]
         },
         {
