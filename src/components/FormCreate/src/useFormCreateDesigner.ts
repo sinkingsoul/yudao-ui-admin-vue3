@@ -5,9 +5,10 @@ import {
   useUploadFileRule,
   useUploadImgRule,
   useUploadImgsRule,
-  useDownloadRule
+  useDownloadRule,
+  useTableFormProRule
 } from './config'
-import { Ref } from 'vue'
+import { Ref, onMounted, nextTick } from 'vue'
 import { Menu } from '@/components/FormCreate/src/type'
 import { apiSelectRule } from '@/components/FormCreate/src/config/selectRule'
 
@@ -28,6 +29,7 @@ export const useFormCreateDesigner = async (designer: Ref) => {
   const uploadImgRule = useUploadImgRule()
   const downloadRule = useDownloadRule()
   const uploadImgsRule = useUploadImgsRule()
+  const tableFormProRule = useTableFormProRule()
 
   /**
    * 构建表单组件
@@ -48,8 +50,20 @@ export const useFormCreateDesigner = async (designer: Ref) => {
         label: component.label
       })
     })
+
+    // 将表格表单pro加入到子表单分类（通过规则的 menu 自动挂载，避免重复 append）
+    const d: any = designer.value
+    if (d) {
+      d.removeMenuItem && d.removeMenuItem('TableFormPro')
+      if (!d._addedTableFormPro) {
+        d._addedTableFormPro = true
+        d.addComponent && d.addComponent(tableFormProRule)
+        // 不再手动 appendMenuItem 到 subform，交由规则的 menu 字段处理
+      }
+    }
   }
 
+  // 系统字段规则
   const userSelectRule = useSelectRule({
     name: 'UserSelect',
     label: '用户选择器',

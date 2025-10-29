@@ -5,6 +5,7 @@ import { useDictSelectRule } from './useDictSelectRule'
 import { useEditorRule } from './useEditorRule'
 import { useSelectRule } from './useSelectRule'
 import { useDownloadRule } from './useDownloadRule'
+import { useTableFormProRule } from './useTableFormProRule'
 
 export {
   useUploadFileRule,
@@ -13,5 +14,6 @@ export {
   useDictSelectRule,
   useEditorRule,
   useSelectRule,
-  useDownloadRule
+  useDownloadRule,
+  useTableFormProRule
 }

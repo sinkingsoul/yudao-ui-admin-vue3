@@ -69,6 +69,10 @@ import { useApiSelect } from '@/components/FormCreate'
 import { Editor } from '@/components/Editor'
 import DictSelect from '@/components/FormCreate/src/components/DictSelect.vue'
 import FcDownload from '@/components/FormCreate/src/components/Download.vue'
+import TableFormPro from '@/components/FormCreate/src/components/TableFormPro.vue'
+// 设计态预览组件（与原表格表单一致）
+// 注意：该路径为内部路径，升级 @form-create/designer 版本时需确认是否调整
+import TableFormView from '@form-create/designer/src/components/tableForm/TableFormView.vue'
 
 const UserSelect = useApiSelect({
   name: 'UserSelect',
@@ -120,6 +124,7 @@ const components = [
   DeptSelect,
   ApiSelect,
   FcDownload,
+  TableFormPro,
   Editor,
   ElCollapse,
   ElCollapseItem,
@@ -134,4 +139,6 @@ export const setupFormCreate = (app: App<Element>) => {
   formCreate.use(install)
   app.use(formCreate)
   app.use(FcDesigner)
+  // 让 TableFormPro 具备与 TableForm 一样的设计态视图（列管理、右下角新增列等）
+  FcDesigner.component('TableFormPro', TableFormPro, TableFormView)
 }
