@@ -2,6 +2,7 @@
   <el-button
     v-bind="buttonAttrs"
     :type="buttonType"
+    :size="buttonSize"
     :icon="showIcon ? Download : undefined"
     :loading="loading"
     :disabled="disabled || !fileUrl"
@@ -23,6 +24,7 @@ interface Props {
   fileName?: string // 文件名称（可选，如果不提供则从 URL 中提取）
   buttonText?: string // 按钮文本
   buttonType?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'text' | 'default' // 按钮类型
+  buttonSize?: 'default' | 'small' | 'large' // 按钮尺寸
   showIcon?: boolean // 是否显示图标
   disabled?: boolean // 是否禁用
   downloadMethod?: 'link' | 'fetch' // 下载方式：link-直接链接下载，fetch-通过接口下载
@@ -35,6 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
   fileName: '',
   buttonText: '下载文件',
   buttonType: 'primary',
+  buttonSize: 'default',
   showIcon: true,
   disabled: false,
   downloadMethod: 'link'
@@ -45,7 +48,7 @@ const loading = ref(false)
 
 // 过滤掉已经在 props 中定义的属性，剩余的作为按钮属性
 const buttonAttrs = computed(() => {
-  const { modelValue, fileUrl, fileName, buttonText, buttonType, showIcon, disabled, downloadMethod, formCreateInject, ...rest } = attrs
+  const { modelValue, fileUrl, fileName, buttonText, buttonType, buttonSize, showIcon, disabled, downloadMethod, formCreateInject, ...rest } = attrs
   return rest
 })
 
@@ -88,7 +91,8 @@ const handleDownload = async () => {
       // 通过 fetch 下载
       const response = await fetch(props.fileUrl)
       if (!response.ok) {
-        throw new Error('下载失败')
+        ElMessage.error('下载失败')
+        return
       }
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
@@ -109,5 +113,3 @@ const handleDownload = async () => {
   }
 }
 </script>
-
-

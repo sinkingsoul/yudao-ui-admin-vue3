@@ -15,7 +15,12 @@ export const useDownloadRule = () => {
         field: generateUUID(), // 需要 field 来避免 FormCreate 绑定错误
         props: {
           fileUrl: '',
-          buttonText: '下载文件'
+          buttonText: '下载文件',
+          buttonType: 'primary',
+          buttonSize: 'default',
+          showIcon: true,
+          disabled: false,
+          downloadMethod: 'link'
         }
       }
     },
@@ -61,6 +66,17 @@ export const useDownloadRule = () => {
           ]
         },
         {
+          type: 'select',
+          field: 'buttonSize',
+          title: '按钮尺寸',
+          value: 'default',
+          options: [
+            { label: '默认', value: 'default' },
+            { label: '小', value: 'small' },
+            { label: '大', value: 'large' }
+          ]
+        },
+        {
           type: 'switch',
           field: 'showIcon',
           title: '显示图标',
@@ -72,7 +88,7 @@ export const useDownloadRule = () => {
           title: '下载方式',
           value: 'link',
           options: [
-            { label: '直接下载', value: 'link' },
+            { label: '直接下载', value: 'link' }
             // { label: '接口下载', value: 'fetch' }
           ]
         },
@@ -86,4 +102,3 @@ export const useDownloadRule = () => {
     }
   }
 }
-
