@@ -1,5 +1,5 @@
 <template>
-  <div class="process-panel__container" :style="{ width: `${width}px`, maxHeight: '600px' }">
+  <div class="process-panel__container" :style="{ width: `${width}px` }">
     <el-collapse v-model="activeTab" v-if="isReady">
       <el-collapse-item name="base">
         <!-- class="panel-tab__title" -->
@@ -309,3 +309,52 @@ function syncFromBusinessObject() {
 onMounted(syncFromBusinessObject)
 watch(() => props.businessObject, syncFromBusinessObject, { deep: true })
 </script>
+
+<style lang="scss" scoped>
+.process-panel__container {
+  padding: 0;
+  overflow-x: hidden;
+
+  // 自定义滚动条样式
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+
+  :deep(.el-collapse) {
+    border: none;
+  }
+
+  :deep(.el-collapse-item__header) {
+    background-color: #f5f7fa;
+    padding-left: 16px;
+    font-weight: 500;
+    border-bottom: 1px solid #ebeef5;
+  }
+
+  :deep(.el-collapse-item__content) {
+    padding: 16px;
+    background-color: #ffffff;
+  }
+
+  :deep(.el-collapse-item__wrap) {
+    border-bottom: 1px solid #ebeef5;
+  }
+}
+</style>
+
+
+
