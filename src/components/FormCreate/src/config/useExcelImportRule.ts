@@ -53,7 +53,7 @@ export const useExcelImportRule = () => {
         ] },
         { type: 'switch', field: 'showIcon', title: '显示上传图标', value: true },
         // 目标与行为
-        { type: 'ExcelTargetPicker', field: 'targetField', title: '目标表格组件', value: '' },
+        { type: 'ExcelTargetPicker', field: 'targetField', title: '目标表格组件(如下拉框为空，请手动填写表格id)', value: '' },
         { type: 'switch', field: 'append', title: '追加到已有数据', value: false },
         { type: 'switch', field: 'disabled', title: '是否禁用', value: false }
       ])
