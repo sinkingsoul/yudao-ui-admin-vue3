@@ -6,6 +6,7 @@ import { useEditorRule } from './useEditorRule'
 import { useSelectRule } from './useSelectRule'
 import { useDownloadRule } from './useDownloadRule'
 import { useTableFormProRule } from './useTableFormProRule'
+import { useExcelImportRule } from './useExcelImportRule'
 
 export {
   useUploadFileRule,
@@ -15,5 +16,6 @@ export {
   useEditorRule,
   useSelectRule,
   useDownloadRule,
-  useTableFormProRule
+  useTableFormProRule,
+  useExcelImportRule
 }

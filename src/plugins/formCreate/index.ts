@@ -70,6 +70,9 @@ import { Editor } from '@/components/Editor'
 import DictSelect from '@/components/FormCreate/src/components/DictSelect.vue'
 import FcDownload from '@/components/FormCreate/src/components/Download.vue'
 import TableFormPro from '@/components/FormCreate/src/components/TableFormPro.vue'
+import ExcelImport from '@/components/FormCreate/src/components/ExcelImport.vue'
+import ExcelTargetSelect from '@/components/FormCreate/src/components/ExcelTargetSelect.vue'
+import ExcelTargetPicker from '@/components/FormCreate/src/components/ExcelTargetPicker.vue'
 // 设计态预览组件（与原表格表单一致）
 // 注意：该路径为内部路径，升级 @form-create/designer 版本时需确认是否调整
 import TableFormView from '@form-create/designer/src/components/tableForm/TableFormView.vue'
@@ -125,6 +128,9 @@ const components = [
   ApiSelect,
   FcDownload,
   TableFormPro,
+  ExcelImport,
+  ExcelTargetSelect,
+  ExcelTargetPicker,
   Editor,
   ElCollapse,
   ElCollapseItem,
