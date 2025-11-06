@@ -3,16 +3,16 @@
     <div style="margin-top: 10px">
       <span>类型：</span>
       <el-button-group>
-        <el-button size="mini" :type="type === 'time' ? 'primary' : ''" @click="setType('time')"
+        <el-button size="small" :type="type === 'time' ? 'primary' : ''" @click="setType('time')"
           >时间</el-button
         >
         <el-button
-          size="mini"
+          size="small"
           :type="type === 'duration' ? 'primary' : ''"
           @click="setType('duration')"
           >持续</el-button
         >
-        <el-button size="mini" :type="type === 'cycle' ? 'primary' : ''" @click="setType('cycle')"
+        <el-button size="small" :type="type === 'cycle' ? 'primary' : ''" @click="setType('cycle')"
           >循环</el-button
         >
       </el-button-group>
@@ -123,11 +123,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { CircleCheckFilled, WarningFilled, QuestionFilled } from '@element-plus/icons-vue'
 import DurationConfig from './DurationConfig.vue'
 import CycleConfig from './CycleConfig.vue'
-import { createListenerObject, updateElementExtensions } from '../../utils'
+
 const bpmnInstances = () => (window as any).bpmnInstances
 const props = defineProps({ businessObject: Object })
 const type = ref('time')
@@ -138,7 +138,6 @@ const showDurationDialog = ref(false)
 const showCycleDialog = ref(false)
 const showHelp = ref(false)
 const dateValue = ref(null)
-const bpmnElement = ref(null)
 
 const placeholder = computed(() => {
   if (type.value === 'time') return '请输入时间'
@@ -171,14 +170,18 @@ function syncFromBusinessObject() {
     if (timerDef) {
       if (timerDef.timeDate) {
         type.value = 'time'
-        condition.value = timerDef.timeDate.body
+        condition.value = timerDef.timeDate.body || ''
       } else if (timerDef.timeDuration) {
         type.value = 'duration'
-        condition.value = timerDef.timeDuration.body
+        condition.value = timerDef.timeDuration.body || ''
       } else if (timerDef.timeCycle) {
         type.value = 'cycle'
-        condition.value = timerDef.timeCycle.body
+        condition.value = timerDef.timeCycle.body || ''
+      } else {
+        condition.value = ''
       }
+    } else {
+      condition.value = ''
     }
   }
 }
@@ -188,18 +191,17 @@ onMounted(syncFromBusinessObject)
 function setType(t) {
   type.value = t
   condition.value = ''
-  updateNode()
 }
 
 // 输入校验
 watch([type, condition], () => {
   valid.value = validate()
-  // updateNode() // 可以注释掉，避免频繁触发
 })
 
 function validate() {
+  if (!condition.value) return true
   if (type.value === 'time') {
-    return !!condition.value && !isNaN(Date.parse(condition.value))
+    return !isNaN(Date.parse(condition.value))
   }
   if (type.value === 'duration') {
     return /^P.*$/.test(condition.value)
@@ -240,7 +242,7 @@ function onCycleConfirm() {
   updateNode()
 }
 
-// 输入框聚焦时弹窗（可选）
+// 输入框聚焦时弹窗
 function handleInputFocus() {
   if (type.value === 'time') showDatePicker.value = true
   if (type.value === 'duration') showDurationDialog.value = true
@@ -249,49 +251,51 @@ function handleInputFocus() {
 
 // 同步到节点
 function updateNode() {
-  const moddle = window.bpmnInstances?.moddle
-  const modeling = window.bpmnInstances?.modeling
-  const elementRegistry = window.bpmnInstances?.elementRegistry
+  const bi = bpmnInstances()
+  if (!bi) return
+
+  const { moddle, modeling, elementRegistry } = bi
   if (!moddle || !modeling || !elementRegistry) return
 
-  // 获取元素
-  if (!props.businessObject || !props.businessObject.id) return
-  const element = elementRegistry.get(props.businessObject.id)
+  const bo: any = props.businessObject
+  if (!bo || !bo.id) return
+
+  const element = elementRegistry.get(bo.id)
   if (!element) return
 
-  // 1. 复用原有 timerDef，或新建
-  let timerDef =
-    element.businessObject.eventDefinitions && element.businessObject.eventDefinitions[0]
-  if (!timerDef) {
-    timerDef = bpmnInstances().bpmnFactory.create('bpmn:TimerEventDefinition', {})
+  // 获取或创建 TimerEventDefinition
+  let timerDef: any = element.businessObject.eventDefinitions?.[0]
+
+  if (!timerDef || timerDef.$type !== 'bpmn:TimerEventDefinition') {
+    timerDef = moddle.create('bpmn:TimerEventDefinition')
     modeling.updateProperties(element, {
       eventDefinitions: [timerDef]
     })
+    const updatedElement = elementRegistry.get(bo.id)
+    if (updatedElement && updatedElement.businessObject.eventDefinitions) {
+      timerDef = updatedElement.businessObject.eventDefinitions[0]
+    }
   }
 
-  // 2. 清空原有
-  delete timerDef.timeDate
-  delete timerDef.timeDuration
-  delete timerDef.timeCycle
+  // 准备更新属性
+  const updateProps: any = {}
+  const body = (condition.value || '').trim()
 
-  // 3. 设置新的
-  if (type.value === 'time' && condition.value) {
-    timerDef.timeDate = bpmnInstances().bpmnFactory.create('bpmn:FormalExpression', {
-      body: condition.value
-    })
-  } else if (type.value === 'duration' && condition.value) {
-    timerDef.timeDuration = bpmnInstances().bpmnFactory.create('bpmn:FormalExpression', {
-      body: condition.value
-    })
-  } else if (type.value === 'cycle' && condition.value) {
-    timerDef.timeCycle = bpmnInstances().bpmnFactory.create('bpmn:FormalExpression', {
-      body: condition.value
-    })
+  if (type.value === 'time') {
+    updateProps.timeDate = body ? moddle.create('bpmn:FormalExpression', { body }) : undefined
+    updateProps.timeDuration = undefined
+    updateProps.timeCycle = undefined
+  } else if (type.value === 'duration') {
+    updateProps.timeDate = undefined
+    updateProps.timeDuration = body ? moddle.create('bpmn:FormalExpression', { body }) : undefined
+    updateProps.timeCycle = undefined
+  } else if (type.value === 'cycle') {
+    updateProps.timeDate = undefined
+    updateProps.timeDuration = undefined
+    updateProps.timeCycle = body ? moddle.create('bpmn:FormalExpression', { body }) : undefined
   }
 
-  bpmnInstances().modeling.updateProperties(toRaw(element), {
-    eventDefinitions: [timerDef]
-  })
+  modeling.updateModdleProperties(element, timerDef, updateProps)
 }
 
 watch(
