@@ -31,7 +31,7 @@
       </el-descriptions-item>
       <el-descriptions-item label="支付 IP">{{ detailData.userIp }}</el-descriptions-item>
       <el-descriptions-item label="渠道单号">
-        <el-tag size="mini" type="success" v-if="detailData.channelTransferNo">
+        <el-tag size="small" type="success" v-if="detailData.channelTransferNo">
           {{ detailData.channelTransferNo }}
         </el-tag>
       </el-descriptions-item>
@@ -61,7 +61,7 @@ defineOptions({ name: 'PayTransferDetail' })
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 const detailLoading = ref(false) // 表单的加载中
-const detailData = ref({})
+const detailData = ref<Record<string, any>>({})
 
 /** 打开弹窗 */
 const open = async (id: number) => {
