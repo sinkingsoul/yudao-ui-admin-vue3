@@ -67,7 +67,7 @@
       <!-- 新增的时间事件配置项 -->
       <el-collapse-item v-if="elementType === 'IntermediateCatchEvent'" name="timeEvent">
         <template #title><Icon icon="ep:timer" />时间事件</template>
-        <TimeEventConfig :businessObject="bpmnElement.value?.businessObject" :key="elementId" />
+        <TimeEventConfig :businessObject="elementBusinessObject" :key="elementId" />
       </el-collapse-item>
     </el-collapse>
   </div>
